@@ -24,14 +24,19 @@ const CATEGORIES = [
   { id: "romance", label: "Romance" },
 ];
 
-const CATEGORY_QUERIES: Record<string, string> = {
-  all: "popular movies 2023",
-  action: "action movie 2023",
-  thriller: "thriller 2023",
-  comedy: "comedy 2023",
-  horror: "horror 2023",
-  romance: "romance 2023",
+const CATEGORY_QUERIES: Record<string, string[]> = {
+  all: ["popular 2024", "blockbuster 2024", "hit movie 2025", "top movie 2023"],
+  action: ["action 2024", "action thriller 2024", "action hero 2023"],
+  thriller: ["thriller 2024", "mystery thriller 2023", "suspense 2024"],
+  comedy: ["comedy 2024", "funny movie 2023", "comedy film 2025"],
+  horror: ["horror 2024", "scary movie 2023", "horror thriller 2024"],
+  romance: ["romance 2024", "love story 2023", "romantic film 2024"],
 };
+
+function pickQuery(category: string): string {
+  const queries = CATEGORY_QUERIES[category];
+  return queries[Math.floor(Math.random() * queries.length)];
+}
 
 export function MoviesPage() {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -46,7 +51,7 @@ export function MoviesPage() {
     async (category: string, pg: number, append = false) => {
       if (append) setLoadingMore(true);
       else setLoading(true);
-      const q = CATEGORY_QUERIES[category];
+      const q = pickQuery(category);
       // Use random offset for page 1, shift subsequent pages accordingly
       const apiPage =
         pg === 1 ? randomOffsetRef.current : pg + randomOffsetRef.current - 1;

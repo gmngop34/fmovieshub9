@@ -14,13 +14,18 @@ const CATEGORIES = [
   { id: "romance", label: "Romance" },
 ];
 
-const ANIME_QUERIES: Record<string, string> = {
-  all: "anime",
-  action: "naruto",
-  adventure: "one piece",
-  fantasy: "sword art online",
-  romance: "anime romance",
+const ANIME_QUERIES: Record<string, string[]> = {
+  all: ["anime 2024", "anime series", "anime 2023", "popular anime"],
+  action: ["naruto", "dragon ball", "bleach", "attack on titan"],
+  adventure: ["one piece", "hunter x hunter", "fullmetal alchemist"],
+  fantasy: ["sword art online", "re zero", "overlord", "fairy tail"],
+  romance: ["anime romance", "your lie in april", "toradora"],
 };
+
+function pickQuery(category: string): string {
+  const queries = ANIME_QUERIES[category];
+  return queries[Math.floor(Math.random() * queries.length)];
+}
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -45,7 +50,7 @@ export function AnimePage() {
     async (category: string, pg: number, append = false) => {
       if (append) setLoadingMore(true);
       else setLoading(true);
-      const q = ANIME_QUERIES[category];
+      const q = pickQuery(category);
       // Use random offset for first page to vary results
       const apiPage =
         pg === 1 ? randomOffsetRef.current : pg + randomOffsetRef.current - 1;

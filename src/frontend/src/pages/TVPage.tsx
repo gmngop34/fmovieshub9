@@ -15,14 +15,28 @@ const CATEGORIES = [
   { id: "fantasy", label: "Fantasy" },
 ];
 
-const CATEGORY_QUERIES: Record<string, string> = {
-  all: "popular series",
-  drama: "drama series",
-  crime: "crime series",
-  scifi: "sci fi series",
-  comedy: "comedy series",
-  fantasy: "fantasy series",
+const CATEGORY_QUERIES: Record<string, string[]> = {
+  all: [
+    "popular series 2024",
+    "hit series 2023",
+    "best TV show 2024",
+    "new series 2025",
+  ],
+  drama: ["drama series 2024", "drama TV 2023", "drama show 2024"],
+  crime: ["crime series 2024", "crime drama 2023", "detective series 2024"],
+  scifi: ["sci fi series 2024", "science fiction TV 2023", "scifi show 2024"],
+  comedy: ["comedy series 2024", "comedy TV show 2023", "sitcom 2024"],
+  fantasy: [
+    "fantasy series 2024",
+    "fantasy TV 2023",
+    "supernatural series 2024",
+  ],
 };
+
+function pickQuery(category: string): string {
+  const queries = CATEGORY_QUERIES[category];
+  return queries[Math.floor(Math.random() * queries.length)];
+}
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -47,7 +61,7 @@ export function TVPage() {
     async (category: string, pg: number, append = false) => {
       if (append) setLoadingMore(true);
       else setLoading(true);
-      const q = CATEGORY_QUERIES[category];
+      const q = pickQuery(category);
       // Use random offset for first page to vary results
       const apiPage =
         pg === 1 ? randomOffsetRef.current : pg + randomOffsetRef.current - 1;

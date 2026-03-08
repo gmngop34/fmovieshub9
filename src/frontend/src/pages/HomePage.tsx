@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Play } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CategoryFilter } from "../components/CategoryFilter";
 import { MovieCard, MovieCardSkeleton } from "../components/MovieCard";
 import { fetchOmdbDetail, searchOmdb } from "../hooks/useOmdb";
@@ -16,11 +16,11 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_QUERIES: Record<string, { q: string; type?: string }> = {
-  featured: { q: "drama 2023" },
-  popular: { q: "comedy 2023" },
-  "top-imdb": { q: "classic film" },
-  "new-release": { q: "2024" },
-  trending: { q: "thriller 2024" },
+  featured: { q: "award winning" },
+  popular: { q: "most popular" },
+  "top-imdb": { q: "top rated" },
+  "new-release": { q: "2025" },
+  trending: { q: "trending 2024" },
 };
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -249,12 +249,6 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* Trending Section */}
-        <TrendingSection />
-
-        {/* TV Series Section */}
-        <SeriesSection />
-
         {/* Footer */}
         <footer className="pt-8 mt-8 border-t border-white/10 text-center">
           <p className="text-gray-500 text-sm">
@@ -271,126 +265,5 @@ export function HomePage() {
         </footer>
       </div>
     </div>
-  );
-}
-
-const TRENDING_QUERIES = [
-  "horror 2024",
-  "sci-fi 2024",
-  "romance 2024",
-  "adventure 2024",
-];
-const SERIES_QUERIES = [
-  "crime series",
-  "fantasy series",
-  "drama series",
-  "comedy series",
-];
-
-function TrendingSection() {
-  const navigate = useNavigate();
-  const [movies, setMovies] = useState<OmdbMovie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const trendingQ = useRef(
-    TRENDING_QUERIES[Math.floor(Math.random() * TRENDING_QUERIES.length)],
-  );
-
-  useEffect(() => {
-    const q = trendingQ.current;
-    searchOmdb(q, undefined, randomPage()).then((data) => {
-      if (data.Search) {
-        setMovies(shuffleArray(data.Search).slice(0, 6));
-        setLoading(false);
-      } else {
-        searchOmdb(q).then((d) => {
-          if (d.Search) setMovies(shuffleArray(d.Search).slice(0, 6));
-          setLoading(false);
-        });
-      }
-    });
-  }, []);
-
-  return (
-    <section>
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-white text-xl md:text-2xl font-display font-bold">
-          🔥 Trending Now
-        </h2>
-        <a
-          href="/trending"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate({ to: "/trending" });
-          }}
-          className="flex items-center gap-1 text-[#00dd55] hover:text-[#00ff66] text-sm font-medium"
-        >
-          View More <ChevronRight size={16} />
-        </a>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton count
-              <MovieCardSkeleton key={i} />
-            ))
-          : movies.map((movie, i) => (
-              <MovieCard key={movie.imdbID} movie={movie} index={i} />
-            ))}
-      </div>
-    </section>
-  );
-}
-
-function SeriesSection() {
-  const navigate = useNavigate();
-  const [movies, setMovies] = useState<OmdbMovie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const seriesQ = useRef(
-    SERIES_QUERIES[Math.floor(Math.random() * SERIES_QUERIES.length)],
-  );
-
-  useEffect(() => {
-    const q = seriesQ.current;
-    searchOmdb(q, "series", randomPage()).then((data) => {
-      if (data.Search) {
-        setMovies(shuffleArray(data.Search).slice(0, 6));
-        setLoading(false);
-      } else {
-        searchOmdb(q, "series").then((d) => {
-          if (d.Search) setMovies(shuffleArray(d.Search).slice(0, 6));
-          setLoading(false);
-        });
-      }
-    });
-  }, []);
-
-  return (
-    <section>
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-white text-xl md:text-2xl font-display font-bold">
-          📺 Popular Series
-        </h2>
-        <a
-          href="/tv"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate({ to: "/tv" });
-          }}
-          className="flex items-center gap-1 text-[#00dd55] hover:text-[#00ff66] text-sm font-medium"
-        >
-          View More <ChevronRight size={16} />
-        </a>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton count
-              <MovieCardSkeleton key={i} />
-            ))
-          : movies.map((movie, i) => (
-              <MovieCard key={movie.imdbID} movie={movie} index={i} />
-            ))}
-      </div>
-    </section>
   );
 }
